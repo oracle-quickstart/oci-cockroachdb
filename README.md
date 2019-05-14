@@ -1,6 +1,8 @@
 # oci-cockroachdb
 
-Terraform module for deploying a CockroachDB [CockroachDB](https://www.cockroachlabs.com/) cluster.
+Terraform module for deploying an insecure multi-node CockroachDB [CockroachDB](https://www.cockroachlabs.com/) cluster on multiple instance.
+
+NOTE: If you plan to use CockroachDB in production, we strongly recommend using a secure cluster instead. 
 
 ## Prerequisites
 First off you'll need to do some pre deploy setup.  That's all detailed [here](https://github.com/cloud-partners/oci-prerequisites).
@@ -50,6 +52,8 @@ When the apply is complete, the infrastructure will be deployed, but cloud-init 
 When the deployment is completed, it will show you the public IP of one of the instances created on Oracle Cloud Infrastructure (OCI). Using that public IP, you can browse the CockroachDB cluster's admin page on port 8080.
 
 `http://<public IP of the instance>:8080`
+
+![](./images/cockroachdb.png)
 
 ## View the instance in the Console
 You can also login to the web console [here](https://console.us-phoenix-1.oraclecloud.com/a/compute/instances) to view the IaaS that is running the cluster.
