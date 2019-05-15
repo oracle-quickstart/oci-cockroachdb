@@ -1,17 +1,15 @@
-# oci-cockroachdb
+# oci-quickstart-cockroachdb
 
-Terraform module for deploying an insecure multi-node CockroachDB [CockroachDB](https://www.cockroachlabs.com/) cluster on multiple instance.
-
-NOTE: If you plan to use CockroachDB in production, we strongly recommend using a secure cluster instead. 
+These is a Terraform module that deploys [CockroachDB](https://www.cockroachlabs.com/) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure).  It is developed jointly by Oracle and Cockroach Labs.
 
 ## Prerequisites
-First off you'll need to do some pre deploy setup.  That's all detailed [here](https://github.com/cloud-partners/oci-prerequisites).
+First off you'll need to do some pre deploy setup.  That's all detailed [here](https://github.com/oracle/oci-quickstart-prerequisites).
 
 ## Clone the Module
 Now, you'll want a local copy of this repo.  You can make that with the commands:
 
-    git clone https://github.com/oci-quickstart/oci-cockroachdb.git
-    cd oci-cockroachdb/terraform
+    git clone https://github.com/oracle/oci-quickstart-cockroachdb.git
+    cd oci-quickstart-cockroachdb/terraform
     ls
 
 That should give you this:
