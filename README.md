@@ -1,12 +1,12 @@
 # oci-quickstart-cockroachdb
 
-These is a Terraform module that deploys [CockroachDB](https://www.cockroachlabs.com/) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure).  It is developed jointly by Oracle and Cockroach Labs.
+This is a Terraform module that deploys [CockroachDB](https://www.cockroachlabs.com/) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure). It is developed jointly by Oracle and Cockroach Labs.
 
 ## Prerequisites
-First off you'll need to do some pre deploy setup.  That's all detailed [here](https://github.com/oracle/oci-quickstart-prerequisites).
+First off you'll need to do some pre deploy setup. That's all detailed [here](https://github.com/oracle/oci-quickstart-prerequisites).
 
 ## Clone the Module
-Now, you'll want a local copy of this repo.  You can make that with the commands:
+Now, you'll want a local copy of this repo. You can make that with the commands:
 
     git clone https://github.com/oracle/oci-quickstart-cockroachdb.git
     cd oci-quickstart-cockroachdb/terraform
