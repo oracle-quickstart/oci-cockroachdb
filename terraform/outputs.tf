@@ -1,3 +1,3 @@
-output "CockroachDB instance public IP" {
-  value = "${data.oci_core_vnic.TFInstance_vnic.public_ip_address}"
+output "CockroachDB load balancer public IP" {
+  value = ["${oci_load_balancer_load_balancer.lb1.ip_addresses}"]
 }

@@ -49,9 +49,13 @@ When the apply is complete, the infrastructure will be deployed, but cloud-init 
 
 When the deployment is completed, it will show you the public IP of one of the instances created on Oracle Cloud Infrastructure (OCI). Using that public IP, you can browse the CockroachDB cluster's admin page on port 8080.
 
-`http://<public IP of the instance>:8080`
+`http://<public IP of the load balancer>:8080`
 
 ![](./images/cockroachdb.png)
+
+You can also connect to the cluster by using the [built-in SQL client](https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html) that comes with CockroachDB and use the public ip of the load balancer as the target host.
+
+`cockroach sql --insecure --host=<public IP of the load balancer>`
 
 ## View the instance in the Console
 You can also login to the web console [here](https://console.us-phoenix-1.oraclecloud.com/a/compute/instances) to view the IaaS that is running the cluster.

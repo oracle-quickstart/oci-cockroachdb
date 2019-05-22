@@ -18,8 +18,8 @@ firewall-offline-cmd --add-port=8080/tcp
 systemctl restart firewalld
 
 # Download and install CockroachDB
-wget -qO- https://binaries.cockroachdb.com/cockroach-v19.1.0.linux-amd64.tgz | tar  xvz
-cp -i cockroach-v19.1.0.linux-amd64/cockroach /usr/local/bin
+wget -qO- https://binaries.cockroachdb.com/cockroach-v19.1.1.linux-amd64.tgz | tar  xvz
+cp -i cockroach-v19.1.1.linux-amd64/cockroach /usr/local/bin
 
 # Start and initialize the cluster
 if [[ $initDNS == $nodeDNS ]]
