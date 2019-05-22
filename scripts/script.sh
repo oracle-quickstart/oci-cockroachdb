@@ -1,6 +1,6 @@
 #!/bin/bash
 
-initDNS="${name}0.${name}subnet.${name}vcn.oraclevcn.com"
+initDNS="${name}0.${name}.${name}.oraclevcn.com"
 nodeDNS=$(hostname -f)
 
 # Create the list of nodes to join the cluster based on the number of instances
@@ -8,7 +8,7 @@ n=${count}
 join=""
 
 for i in $(seq 0 $(($n > 0? $n-1: 0))); do 
-  nodes="${name}$i.${name}subnet.${name}vcn.oraclevcn.com"
+  nodes="${name}$i.${name}.${name}.oraclevcn.com"
   join="$${join}$${join:+,}$nodes"
 done
 

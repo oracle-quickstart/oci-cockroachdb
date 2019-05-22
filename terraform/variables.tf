@@ -7,8 +7,8 @@ variable "region" {}
 variable "compartment_ocid" {}
 variable "ssh_public_key" {}
 
-variable "availability_domain" {
-  default = "1"
+variable "CIDR" {
+  default = "10.0.0.0/16"
 }
 
 variable "instance" {
