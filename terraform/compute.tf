@@ -9,7 +9,8 @@ data "template_file" "user_data" {
 
 resource "oci_core_instance" "TFInstance" {
   count               = "${var.instance["instance_count"]}"
-  availability_domain = "${lookup(data.oci_identity_availability_domains.ad.availability_domains[count.index%3], "name")}"
+  availability_domain = "${element(data.template_file.ad_names.*.rendered, count.index)}"
+  fault_domain        = "FAULT-DOMAIN-${((count.index / length(data.template_file.ad_names.*.rendered)) % local.fault_domains_per_ad) +1}"
   compartment_id      = "${var.compartment_ocid}"
   display_name        = "${var.instance["name"]}${count.index}"
   shape               = "${var.instance["shape"]}"
