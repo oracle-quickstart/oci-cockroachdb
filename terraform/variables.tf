@@ -23,6 +23,7 @@ variable "instance" {
 
 locals {
   fault_domains_per_ad = 3
+  timestamp            = "${timestamp()}"
 }
 
 // https://docs.cloud.oracle.com/iaas/images/image/cf34ce27-e82d-4c1a-93e6-e55103f90164/
