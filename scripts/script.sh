@@ -40,12 +40,7 @@ then
   for i in $(seq 0 $(($n > 0? $n-1: 0))); do
     mkdir certs-cockroach$i
     cockroach cert create-node \
-    cockroach$i.cockroach.cockroach.oraclevcn.com \
-    localhost \
-    127.0.0.1 \
-    ${lbIP} \
-    --certs-dir=certs \
-    --ca-key=my-safe-directory/ca.key
+    cockroach$i.cockroach.cockroach.oraclevcn.com localhost 127.0.0.1 ${lbIP} --certs-dir=certs --ca-key=my-safe-directory/ca.key
     cp certs/node.crt certs-cockroach$i/node.crt
     cp certs/node.key certs-cockroach$i/node.key
     # Upload certificates to OCI Object Storage
@@ -129,7 +124,7 @@ else
     curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/ca$nodeNumber.crt > /certs/ca.crt
     curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node$nodeNumber.crt > /certs/node.crt
     curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node$nodeNumber.key > /certs/node.key
-    sleep 5
+    sleep 10
     done
 fi
 
@@ -141,7 +136,7 @@ then
     cockroach init --certs-dir=certs-cockroach0 --host=$initDNS
 else
     until $(curl --output /dev/null --silent --head --fail http://${name}0:8080); do
-    sleep 5
+    sleep 10
     done
     chmod 600 certs/node.key
     cockroach start --certs-dir=certs --advertise-addr=$nodeDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
