@@ -2,8 +2,13 @@ data "template_file" "user_data" {
   template = "${file("../scripts/script.sh")}"
 
   vars {
-    count = "${var.instance["instance_count"]}"
-    name  = "${var.instance["name"]}"
+    count           = "${var.instance["instance_count"]}"
+    name            = "${var.instance["name"]}"
+    region          = "${var.region}"
+    par_request_url = "${oci_objectstorage_preauthrequest.bucket_par.access_uri}"
+    namespace       = "${data.oci_objectstorage_namespace.ns.namespace}"
+    bucket          = "${oci_objectstorage_bucket.bucket1.name}"
+    lbIP            = "${oci_load_balancer_load_balancer.lb1.ip_addresses[0]}"
   }
 }
 

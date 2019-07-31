@@ -31,28 +31,29 @@ then
   for i in $(seq 0 $(($n > 0? $n-1: 0))); do
     mkdir certs-cockroach$i
     cockroach cert create-node \
-    $(hostname -i) \
-    $(hostname) \
-    $(hostname -f) \
+    cockroach$i.cockroach.cockroach.oraclevcn.com \
     localhost \
     127.0.0.1 \
-    $lbIP \
+    ${lbIP} \
     --certs-dir=certs \
     --ca-key=my-safe-directory/ca.key
-    curl -X PUT -d 'certs/ca.crt' -v https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/ca$i.crt
-    curl -X PUT -d 'certs/node.crt' -v https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node$i.crt
-    curl -X PUT -d 'certs/node.key' -v https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node$i.key
+    cp certs/node.crt certs-cockroach$i/node.crt
+    cp certs/node.key certs-cockroach$i/node.key
+    curl -X PUT --data-binary @certs/ca.crt https://objectstorage.${region}.oraclecloud.com${par_request_url}ca$i.crt
+    curl -X PUT --data-binary @certs-cockroach$i/node.crt https://objectstorage.${region}.oraclecloud.com${par_request_url}node$i.crt
+    curl -X PUT --data-binary @certs-cockroach$i/node.key https://objectstorage.${region}.oraclecloud.com${par_request_url}node$i.key
     rm certs/node.crt certs/node.key
     done
-    curl https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node0.crt > ~/certs/node.crt
-    curl https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node$0.key > ~/certs/node.key
+    cp certs/ca.crt certs-cockroach0/ca.crt
+    curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/ca0.crt > ~/certs/node.crt
+    curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node0.key > ~/certs/node.key
 else
     mkdir ~/certs
     nodeNumber=$(echo -n $(hostname) | tail -c 1)
     while ! [ -s ~/certs/ca.crt ] && ! [ -s ~/certs/node.crt ] && ! [ -s ~/certs/node.key ]; do
-    curl https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/ca$nodeNumber.crt > ~/certs/ca.crt
-    curl https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node$nodeNumber.crt > ~/certs/node.crt
-    curl https://objectstorage.us-ashburn-1.oraclecloud.com/p/J-P2KZLzsALGMi52Js11xBE7FvlzxNYvvYFndhd_GbQ/n/partners/b/cockroach-OCOIWK/o/node$nodeNumber.key > ~/certs/node.key
+    curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/ca$nodeNumber.crt > ~/certs/ca.crt
+    curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node$nodeNumber.crt > ~/certs/node.crt
+    curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node$nodeNumber.key > ~/certs/node.key
     sleep 5
     done
 fi
@@ -60,11 +61,12 @@ fi
 # Start and initialize the cluster
 if [[ $initDNS == $nodeDNS ]]
 then
-    cockroach start --insecure --advertise-addr=$initDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
-    cockroach init --insecure --host=$initDNS
+    cockroach start --certs-dir=certs-cockroach0 --advertise-addr=$initDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
+    cockroach init --certs-dir=certs-cockroach0 --host=$initDNS
 else
     until $(curl --output /dev/null --silent --head --fail http://${name}0:8080); do
     sleep 5
     done
-    cockroach start --insecure --advertise-addr=$nodeDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
+    chmod 600 certs/node.key
+    cockroach start --certs-dir=certs --advertise-addr=$nodeDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
 fi
