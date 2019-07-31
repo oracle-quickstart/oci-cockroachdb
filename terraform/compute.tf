@@ -9,6 +9,7 @@ data "template_file" "user_data" {
     namespace       = "${data.oci_objectstorage_namespace.ns.namespace}"
     bucket          = "${oci_objectstorage_bucket.bucket1.name}"
     lbIP            = "${oci_load_balancer_load_balancer.lb1.ip_addresses[0]}"
+    lbID            = "${oci_load_balancer_load_balancer.lb1.id}"
   }
 }
 
