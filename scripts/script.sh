@@ -120,6 +120,8 @@ EOF
 /root/bin/oci lb listener update --default-backend-set-name lb-bes2 --listener-name http8080 --load-balancer-id ${lbID} --port 8080 --protocol HTTP --ssl-certificate-name cockroachcert --force --wait-for-state SUCCEEDED --auth instance_principal
 /root/bin/oci lb backend-set update --backend-set-name lb-bes1 --load-balancer-id ${lbID} --backends file://certs-cockroach0/lb-bes1 --health-checker-protocol HTTP --health-checker-url-path /health?ready=1 --policy ROUND_ROBIN --ssl-certificate-name cockroachcert --force --wait-for-state SUCCEEDED --auth instance_principal
 /root/bin/oci lb backend-set update --backend-set-name lb-bes2 --load-balancer-id ${lbID} --backends file://certs-cockroach0/lb-bes2 --health-checker-protocol HTTP --health-checker-url-path /health?ready=1 --policy ROUND_ROBIN --ssl-certificate-name cockroachcert --force --wait-for-state SUCCEEDED --auth instance_principal
+sleep 60
+/root/bin/oci os object bulk-delete -ns ${namespace} --bucket-name ${bucket} --force --auth instance_principal
 else
     mkdir /certs
     nodeNumber=$(echo -n $(hostname) | tail -c 1)
