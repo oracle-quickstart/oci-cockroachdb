@@ -21,6 +21,10 @@ systemctl restart firewalld
 wget -qO- https://binaries.cockroachdb.com/cockroach-v19.1.1.linux-amd64.tgz | tar  xvz
 cp -i cockroach-v19.1.1.linux-amd64/cockroach /usr/local/bin
 
+# Install OCI CLI
+curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+sh install.sh --accept-all-defaults
+
 # Generate certificates
 n=${count}
 if [[ $initDNS == $nodeDNS ]]
@@ -47,6 +51,7 @@ then
     cp certs/ca.crt certs-cockroach0/ca.crt
     curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/ca0.crt > ~/certs/node.crt
     curl https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/node0.key > ~/certs/node.key
+    cockroach cert create-client root --certs-dir=certs-cockroach0 --ca-key=my-safe-directory/ca.key
 else
     mkdir ~/certs
     nodeNumber=$(echo -n $(hostname) | tail -c 1)
@@ -58,9 +63,10 @@ else
     done
 fi
 
-# Start and initialize the cluster
+## Start and initialize the cluster
 if [[ $initDNS == $nodeDNS ]]
 then
+    chmod 600 certs-cockroach0/node.key
     cockroach start --certs-dir=certs-cockroach0 --advertise-addr=$initDNS --join=$join --cache=.25 --max-sql-memory=.25 --background
     cockroach init --certs-dir=certs-cockroach0 --host=$initDNS
 else
