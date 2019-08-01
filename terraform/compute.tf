@@ -10,6 +10,7 @@ data "template_file" "user_data" {
     bucket          = "${oci_objectstorage_bucket.bucket1.name}"
     lbIP            = "${oci_load_balancer_load_balancer.lb1.ip_addresses[0]}"
     lbID            = "${oci_load_balancer_load_balancer.lb1.id}"
+    password        = "${random_string.password.result}"
   }
 }
 
@@ -37,4 +38,10 @@ resource "oci_core_instance" "TFInstance" {
     ssh_authorized_keys = "${var.ssh_public_key}"
     user_data           = "${base64encode(data.template_file.user_data.rendered)}"
   }
+}
+
+resource "random_string" "password" {
+  length  = 8
+  special = false
+  number  = false
 }
