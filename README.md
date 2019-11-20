@@ -7,8 +7,8 @@ First off you'll need to do some pre deploy setup. That's all detailed [here](ht
 ## Clone the Module
 Now, you'll want a local copy of this repo. You can make that with the commands:
 
-    git clone https://github.com/oracle/oci-quickstart-cockroachdb.git
-    cd oci-quickstart-cockroachdb/terraform
+    git clone https://github.com/oracle-quickstart/oci-cockroachdb.git
+    cd oci-cockroachdb/terraform
     ls
 
 That should give you this:
