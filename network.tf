@@ -1,15 +1,14 @@
 resource "oci_core_virtual_network" "VCN" {
-  cidr_block     = var.CIDR
+  cidr_block     = var.VCN-CIDR
   compartment_id = var.compartment_ocid
-  display_name   = "${var.instance["name"]}VCN"
-  dns_label      = lower(var.instance["name"])
+  display_name   = "${var.instance_name}VCN"
+  dns_label      = lower(var.instance_name)
 }
 
 resource "oci_core_subnet" "Subnet" {
-  cidr_block = "10.0.1.0/24"
-
-  display_name      = var.instance["name"]
-  dns_label         = var.instance["name"]
+  cidr_block        = var.Subnet-CIDR
+  display_name      = var.instance_name
+  dns_label         = var.instance_name
   security_list_ids = [oci_core_security_list.SecurityList.id]
   compartment_id    = var.compartment_ocid
   vcn_id            = oci_core_virtual_network.VCN.id
@@ -19,14 +18,14 @@ resource "oci_core_subnet" "Subnet" {
 
 resource "oci_core_internet_gateway" "IG" {
   compartment_id = var.compartment_ocid
-  display_name   = var.instance["name"]
+  display_name   = var.instance_name
   vcn_id         = oci_core_virtual_network.VCN.id
 }
 
 resource "oci_core_route_table" "RT" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_virtual_network.VCN.id
-  display_name   = var.instance["name"]
+  display_name   = var.instance_name
 
   route_rules {
     destination       = "0.0.0.0/0"

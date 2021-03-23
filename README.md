@@ -1,71 +1,88 @@
 # oci-cockroachdb
-This is a Terraform module that deploys [CockroachDB](https://www.cockroachlabs.com/) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure). It is developed jointly by Oracle and Cockroach Labs.
+
+This is a Terraform code that deploys [CockroachDB](https://www.cockroachlabs.com/) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure). It is developed jointly by Oracle and Cockroach Labs.
+
+This reference architecture shows a typical three-node deployment of CockroachDB on Oracle Cloud Infrastructure Compute instances. A public load balancer is used to distribute the workloads across these three nodes.
+
+For details of the architecture, see [_Deploy a highly available CockroachDB cluster_](https://docs.oracle.com/en/solutions/ha-cockroachdb-cluster)
 
 ## Prerequisites
-First off you'll need to do some pre deploy setup. That's all detailed [here](https://github.com/oracle/oci-quickstart-prerequisites).
 
-## Clone the Module
+- Permission to `manage` the following types of resources in your Oracle Cloud Infrastructure tenancy: `vcns`, `internet-gateways`, `route-tables`, `security-lists`, `subnets`, and `instances`.
+
+- Quota to create the following resources: 1 VCN, 1 subnet, 1 Internet Gateway, 1 route rules, 1 Load Balancer, and 3 CockroachDB compute instances.
+
+If you don't have the required permissions and quota, contact your tenancy administrator. See [Policy Reference](https://docs.cloud.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm), [Service Limits](https://docs.cloud.oracle.com/en-us/iaas/Content/General/Concepts/servicelimits.htm), [Compartment Quotas](https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcequotas.htm).
+
+## Deploy Using Oracle Resource Manager
+
+1. Click [![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?region=home&zipUrl=https://github.com/lfeldman/oci-cockroachdb/raw/master/resource-manager/oci-cockroachdb-stack-latest.zip)
+
+    If you aren't already signed in, when prompted, enter the tenancy and user credentials.
+
+2. Review and accept the terms and conditions.
+
+3. Select the region where you want to deploy the stack.
+
+4. Follow the on-screen prompts and instructions to create the stack.
+
+5. After creating the stack, click **Terraform Actions**, and select **Plan**.
+
+6. Wait for the job to be completed, and review the plan.
+
+    To make any changes, return to the Stack Details page, click **Edit Stack**, and make the required changes. Then, run the **Plan** action again.
+
+7. If no further changes are necessary, return to the Stack Details page, click **Terraform Actions**, and select **Apply**. 
+
+## Deploy Using the Terraform CLI
+
+### Clone the Module
 Now, you'll want a local copy of this repo. You can make that with the commands:
 
-    git clone https://github.com/oracle-quickstart/oci-cockroachdb.git
-    cd oci-cockroachdb/terraform
+    git clone https://github.com/oracle-quickstart/oci-cockroachdb
+    cd oci-cockroachdb
     ls
 
-That should give you this:
+### Prerequisites
+First off, you'll need to do some pre-deploy setup.  That's all detailed [here](https://github.com/cloud-partners/oci-prerequisites).
 
-![](./images/git-clone.png)
+Secondly, create a `terraform.tfvars` file and populate with the following information:
 
-## Initialize the deployment
+```
+# Authentication
+tenancy_ocid         = "<tenancy_ocid>"
+user_ocid            = "<user_ocid>"
+fingerprint          = "<finger_print>"
+private_key_path     = "<pem_private_key_path>"
 
-NOTE: By default, a 3 node cluster is deployed. You may change the number of nodes to be deployed by changing the `instance_count` variable in `variables.tf` file.
+# Region
+region = "<oci_region>"
 
-We now need to initialize the directory with the module in it.  This makes the module aware of the OCI provider.  You can do this by running:
+# Availablity Domain 
+availablity_domain_name = "<availablity_domain_name>" # for example GrCH:US-ASHBURN-AD-1
+
+# Compartment
+compartment_ocid        = "<compartment_ocid>"
+
+````
+
+### Create the Resources
+Run the following commands:
 
     terraform init
-
-This gives the following output:
-
-![](./images/terraform-init.png)
-
-## Deploy the module
-Now for the main attraction.  Let's make sure the plan looks good:
-
     terraform plan
-
-That gives:
-
-![](./images/terraform-plan.png)
-
-If that's good, we can go ahead and apply the deploy:
-
     terraform apply
 
-You'll need to enter `yes` when prompted.  Once complete, you'll see something like this:
-
-![](./images/terraform-apply.png)
-
-When the apply is complete, the infrastructure will be deployed, but cloud-init scripts will still be running.  Those will wrap up asynchronously.  So, it'll be a few more minutes before your cluster is accessible.  Now is a good time to get a coffee.
-
-When the deployment is completed, it will show you the public IP of one of the instances created on Oracle Cloud Infrastructure (OCI). Using that public IP, you can browse the CockroachDB cluster's admin page on port 8080.
-
-`http://<public IP of the load balancer>:8080`
+### Verify the Deployment
+Copy loadbalancer_public_url output and verify the access with your web browser:
 
 ![](./images/cockroachdb.png)
 
-You can also connect to the cluster by using the [built-in SQL client](https://www.cockroachlabs.com/docs/stable/install-cockroachdb-mac.html) that comes with CockroachDB and use the public ip of the load balancer as the target host.
-
-`cockroach sql --insecure --host=<public IP of the load balancer>`
-
-## View the instance in the Console
-You can also login to the web console [here](https://console.us-phoenix-1.oraclecloud.com/a/compute/instances) to view the IaaS that is running the cluster.
-
-![](./images/console.png)
-
-## Destroy the Deployment
-When you no longer need the deployment, you can run this command to destroy it:
+### Destroy the Deployment
+When you no longer need the deployment, you can run this command to destroy the resources:
 
     terraform destroy
 
-You'll need to enter `yes` when prompted.
+## Architecture Diagram
 
-![](./images/terraform-destroy.png)
+![](./images/cockroachdb-oci.png)

@@ -1,0 +1,145 @@
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
+title: "Create typical three-node deployment of CockroachDB on Oracle Cloud Infrastructure Compute instances"
+stackDescription: "Deploy typical three-node deployment of CockroachDB on Oracle Cloud Infrastructure Compute instances."
+schemaVersion: 1.1.0
+version: "20190404"
+locale: "en"
+
+variableGroups:
+- title: General Configuration
+  visible: false
+  variables:
+  - tenancy_ocid
+  - region
+
+- title: Required Configuration
+  visible: true  
+  variables:
+  - compartment_ocid
+  - availablity_domain_name 
+  - instance_count
+
+- title: Optional Configuration
+  visible: true
+  variables:  
+  - VCN-CIDR
+  - Subnet-CIDR
+  - instance_name
+  - instance_shape
+  - instance_os
+  - linux_os_version
+  - lb_shape
+
+variables:
+
+  compartment_ocid:
+    type: oci:identity:compartment:id
+    required: true
+    visibile: true
+    title: Compartment
+    description: "Compartment where you want to create the solution resources"
+
+  region:
+    type: oci:identity:region:name
+    required: true
+    visibile: true
+    title: Region
+    description: "Region where you want to deploy the resources defined by this stack."
+
+  availablity_domain_name:
+    type: oci:identity:availabilitydomain:name
+    required: true
+    visibile: true
+    title: "Availability Domain to be chosen"
+    description: "Choose Availability Domain where your infrastructure will be deployed."
+    dependsOn:
+      regionName: ${region}
+      compartmentId: ${compartment_ocid}
+
+  instance_count:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 3
+    title: "Cockroach DB nodes count"
+    description: "Number of Cockroach DB nodes"
+
+  # Optional Configuration
+  VCN-CIDR:
+    type: string
+    required: false
+    default: "10.0.0.0/16"
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    description: "VCN CIDR block where you want to create the solution resources."
+
+  Subnet-CIDR:
+    type: string
+    required: false
+    default: "10.0.2.0/24"
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
+    description: "Subnet's CIDR block where you want to place your CockroachDB nodes."
+
+  instance_name:
+    type: string
+    required: false
+    default: "cockroach"
+    title: "CockroachDB node name"
+    description: "Choose the name for CockroachDB node."
+
+  instance_shape:
+    type: oci:core:instanceshape:name
+    required: false
+    default: "VM.Standard2.2"
+    description: "Shape of the VM used for CockroachDB nodes."
+    dependsOn:
+      compartmentId: ${compartment_ocid}
+
+  instance_os:
+    type: enum
+    required: false
+    title: "Instance OS"
+    description: "An Operating System that determines the operating system for the instance."
+    default: "Oracle Linux"
+    enum:
+      - "Oracle Linux"
+  
+  linux_os_version:
+    type: enum
+    required: false
+    title: "Instance OS version"
+    description: "An Operating System version that determines the operating system version for the instance."
+    default: "7.9"
+    enum:
+      - "7.8"
+      - "7.9"
+  
+  lb_shape:
+    type: enum
+    title: "Load Balanacer Shape"
+    description: "Load Balanacer Shape"
+    default: "100Mbps"
+    required: false 
+    enum:
+      - "100Mbps"
+      - "10Mbps"
+      - "10Mbps-Micro"
+      - "400Mbps"
+      - "8000Mbps"
+
+outputs:
+  
+  loadbalancer_public_url:
+    title: "LoadBalancer URL"
+    displayText: "LoadBalancer URL"
+    type: copyableString
+    visible: true
+  
+  generated_ssh_private_key:
+    title: "Generated SSH Private Key"
+    displayText: "Generated SSH Private Key"
+    type: string
+    visible: true
