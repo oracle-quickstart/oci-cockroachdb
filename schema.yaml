@@ -86,7 +86,7 @@ variables:
   instance_name:
     type: string
     required: false
-    default: "myatpdb"
+    default: "cockroach"
     title: "CockroachDB node name"
     description: "Choose the name for CockroachDB node."
 
