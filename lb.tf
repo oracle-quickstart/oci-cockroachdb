@@ -1,7 +1,7 @@
 resource "oci_load_balancer_load_balancer" "lb1" {
-  shape          = "100Mbps"
+  shape          = var.lb_shape
   compartment_id = var.compartment_ocid
-  display_name   = "${var.instance["name"]}-lb1"
+  display_name   = "${var.instance_name}-lb1"
 
   subnet_ids = [
     oci_core_subnet.Subnet.id,
@@ -36,8 +36,8 @@ resource "oci_load_balancer_backend_set" "lb-bes1" {
 resource "oci_load_balancer_backend" "lb-be1" {
   load_balancer_id = oci_load_balancer_load_balancer.lb1.id
   backendset_name  = oci_load_balancer_backend_set.lb-bes1.name
-  count            = var.instance["instance_count"]
-  ip_address       = oci_core_instance.TFInstance[count.index].private_ip
+  count            = var.instance_count
+  ip_address       = oci_core_instance.CockroachDBInstance[count.index].private_ip
   port             = 26257
   backup           = false
   drain            = false
@@ -73,8 +73,8 @@ resource "oci_load_balancer_backend_set" "lb-bes2" {
 resource "oci_load_balancer_backend" "lb-be2" {
   load_balancer_id = oci_load_balancer_load_balancer.lb1.id
   backendset_name  = oci_load_balancer_backend_set.lb-bes2.name
-  count            = var.instance["instance_count"]
-  ip_address       = oci_core_instance.TFInstance[count.index].private_ip
+  count            = var.instance_count
+  ip_address       = oci_core_instance.CockroachDBInstance[count.index].private_ip
   port             = 8080
   backup           = false
   drain            = false

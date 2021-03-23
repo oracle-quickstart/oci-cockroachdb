@@ -7,7 +7,7 @@ locals {
 resource "oci_core_security_list" "SecurityList" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_virtual_network.VCN.id
-  display_name   = "${var.instance["name"]}SecurityList"
+  display_name   = "${var.instance_name}SecurityList"
 
   egress_security_rules {
     protocol    = local.tcp_protocol
