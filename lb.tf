@@ -6,6 +6,7 @@ resource "oci_load_balancer_load_balancer" "lb1" {
   subnet_ids = [
     oci_core_subnet.Subnet.id,
   ]
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
 resource "oci_load_balancer_listener" "lb-listener1" {

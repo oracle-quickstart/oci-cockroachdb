@@ -13,6 +13,7 @@ variableGroups:
   variables:
   - tenancy_ocid
   - region
+  - release
 
 - title: Required Configuration
   visible: true  

@@ -3,6 +3,7 @@ resource "oci_core_virtual_network" "VCN" {
   compartment_id = var.compartment_ocid
   display_name   = "${var.instance_name}VCN"
   dns_label      = lower(var.instance_name)
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
 resource "oci_core_subnet" "Subnet" {
@@ -14,12 +15,14 @@ resource "oci_core_subnet" "Subnet" {
   vcn_id            = oci_core_virtual_network.VCN.id
   route_table_id    = oci_core_route_table.RT.id
   dhcp_options_id   = oci_core_virtual_network.VCN.default_dhcp_options_id
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
 resource "oci_core_internet_gateway" "IG" {
   compartment_id = var.compartment_ocid
   display_name   = var.instance_name
   vcn_id         = oci_core_virtual_network.VCN.id
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
 resource "oci_core_route_table" "RT" {
@@ -32,5 +35,6 @@ resource "oci_core_route_table" "RT" {
     destination_type  = "CIDR_BLOCK"
     network_entity_id = oci_core_internet_gateway.IG.id
   }
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
