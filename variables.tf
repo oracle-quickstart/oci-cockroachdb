@@ -1,3 +1,6 @@
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 variable "tenancy_ocid" {}
 variable "user_ocid" {}
 variable "fingerprint" {}
@@ -24,8 +27,31 @@ variable "instance_name" {
 }
 
 variable "instance_shape" {
-  description = "Instance Shape"
-  default     = "VM.Standard2.2"
+   default = "VM.Standard.E3.Flex"
+}
+
+variable "instance_flex_shape_ocpus" {
+    default = 1
+}
+
+variable "instance_flex_shape_memory" {
+    default = 10
+}
+
+variable "ssh_public_key" {
+  default = ""
+}
+
+variable "lb_shape" {
+  default = "flexible"
+}
+
+variable "flex_lb_min_shape" {
+  default = "10"
+}
+
+variable "flex_lb_max_shape" {
+  default = "100"
 }
 
 variable "instance_count" {
@@ -34,10 +60,6 @@ variable "instance_count" {
 
 locals {
   fault_domains_per_ad = 3
-}
-
-variable "lb_shape" {
-  default = "100Mbps"
 }
 
 # OS Images
@@ -51,20 +73,16 @@ variable "linux_os_version" {
   default     = "7.9"
 }
 
+# Dictionary Locals
+locals {
+  compute_flexible_shapes = [
+    "VM.Standard.E3.Flex",
+    "VM.Standard.E4.Flex"
+  ]
+}
 
-// https://docs.cloud.oracle.com/iaas/images/image/cf34ce27-e82d-4c1a-93e6-e55103f90164/
-// Oracle-Linux-7.6-2019.05.14-0
-#variable "images" {
-#  type = map(string)
-#
-#  default = {
-#    ap-seoul-1     = "ocid1.image.oc1.ap-seoul-1.aaaaaaaalhbuvdg453ddyhvnbk4jsrw546zslcfyl7vl4oxfgplss3ovlm4q"
-#    ap-tokyo-1     = "ocid1.image.oc1.ap-tokyo-1.aaaaaaaamc2244t7h3gwrrci5z4ni2jsulwcg76gugupkb6epzrypawcz4hq"
-#    ca-toronto-1   = "ocid1.image.oc1.ca-toronto-1.aaaaaaaakjkxzw33dcocgu2oylpllue34tjtyngwru7pcpqn4qh2nwon7n7a"
-#    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaandqh4s7a3oe3on6osdbwysgddwqwyghbx4t4ryvtcwk5xikkpvhq"
-#    uk-london-1    = "ocid1.image.oc1.uk-london-1.aaaaaaaa2xe7cufdwkksdazshtmqaddgd72kdhiyoqurtoukjklktf4nxkbq"
-#    us-ashburn-1   = "ocid1.image.oc1.iad.aaaaaaaa4bfsnhv2cd766tiw5oraw2as7g27upxzvu7ynqwipnqfcfwqskla"
-#    us-phoenix-1   = "ocid1.image.oc1.phx.aaaaaaaavtjpvg4njutkeu7rf7c5lay6wdbjhd4cxis774h7isqd6gktqzoa"
-#  }
-#}
-
+# Checks if is using Flexible Compute Shapes
+locals {
+  is_flexible_lb_shape = var.lb_shape == "flexible" ? true : false
+  is_flexible_node_shape = contains(local.compute_flexible_shapes, var.instance_shape)
+}

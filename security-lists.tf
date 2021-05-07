@@ -1,3 +1,6 @@
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 locals {
   tcp_protocol  = "6"
   all_protocols = "all"
@@ -43,5 +46,6 @@ resource "oci_core_security_list" "SecurityList" {
       min = "26257"
     }
   }
+  defined_tags = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 

@@ -21,19 +21,46 @@ variableGroups:
   - compartment_ocid
   - availablity_domain_name 
   - instance_count
+  - show_advanced
 
-- title: Optional Configuration
-  visible: true
+- title: Networking Optional Configuration
+  visible: 
+      and:
+        - show_advanced
   variables:  
   - VCN-CIDR
   - Subnet-CIDR
+
+- title: Compute Optional Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
+  - ssh_public_key
   - instance_name
   - instance_shape
+  - instance_flex_shape_ocpus
+  - instance_flex_shape_memory
   - instance_os
   - linux_os_version
+
+- title: Load Balancer Optional Configuration
+  visible: 
+      and:
+        - show_advanced
+  variables:
   - lb_shape
+  - flex_lb_min_shape
+  - flex_lb_max_shape 
 
 variables:
+
+  show_advanced:
+    type: boolean
+    title: "Show advanced options?"
+    description: "Shows advanced options."
+    visible: true
+    default: false
 
   compartment_ocid:
     type: oci:identity:compartment:id
@@ -84,6 +111,12 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     description: "Subnet's CIDR block where you want to place your CockroachDB nodes."
 
+  ssh_public_key:
+    type: oci:core:ssh:publickey
+    title: "Public SSH Key"
+    description: "Choose public SSH Key to be uploaded into compute instances."
+    required: false
+
   instance_name:
     type: string
     required: false
@@ -94,10 +127,48 @@ variables:
   instance_shape:
     type: oci:core:instanceshape:name
     required: false
-    default: "VM.Standard2.2"
+    default: "VM.Standard.E3.Flex"
     description: "Shape of the VM used for CockroachDB nodes."
     dependsOn:
       compartmentId: ${compartment_ocid}
+
+  instance_flex_shape_ocpus:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 1
+    title: "Flex Shape OCPUs"
+    description: "Choose number of OCPUs for Flex Shape."
+    visible:
+      and:
+        - or:
+          - eq:
+            - instance_shape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - instance_shape 
+            - "VM.Standard.E4.Flex"
+
+  instance_flex_shape_memory:
+    type: number
+    required: false
+    minimum: 1
+    maximum: 128
+    multipleOf: 1
+    default: 10
+    title: "Flex Shape Memory (GB)"
+    description: "Choose number GB for Flex Shape Memory."
+    visible:
+      and:
+        - or:
+          - eq:
+            - instance_shape 
+            - "VM.Standard.E3.Flex"
+          - eq:
+            - instance_shape
+            - "VM.Standard.E4.Flex"
 
   instance_os:
     type: enum
@@ -115,21 +186,57 @@ variables:
     description: "An Operating System version that determines the operating system version for the instance."
     default: "7.9"
     enum:
-      - "7.8"
       - "7.9"
   
   lb_shape:
     type: enum
-    title: "Load Balanacer Shape"
-    description: "Load Balanacer Shape"
-    default: "100Mbps"
+    title: "Load Balancer Shape"
+    description: "Load Balancer Shape"
+    default: "flexible"
     required: false 
     enum:
+      - "flexible"
       - "100Mbps"
       - "10Mbps"
       - "10Mbps-Micro"
       - "400Mbps"
       - "8000Mbps"
+
+  flex_lb_min_shape:
+    type: enum
+    required: false
+    default: "10"
+    title: "LB Flex Min Shape"
+    description: "Choose Minimum Shape for Flex Load Balancer."
+    enum:
+      - "10"
+      - "100"
+      - "1000"
+      - "400"
+      - "8000"
+    visible:
+      and:
+        - eq:
+          - lb_shape 
+          - "flexible"
+
+  flex_lb_max_shape:
+    type: enum
+    required: false
+    default: "100"
+    title: "LB Flex Max Shape"
+    description: "Choose Maximum Shape for Flex Load Balancer."
+    enum:
+      - "10"
+      - "100"
+      - "1000"
+      - "400"
+      - "8000"
+    visible:
+      and:
+        - eq:
+          - lb_shape 
+          - "flexible"
 
 outputs:
   

@@ -1,5 +1,16 @@
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
+
 resource "oci_load_balancer_load_balancer" "lb1" {
   shape          = var.lb_shape
+
+  dynamic "shape_details" {
+    for_each = local.is_flexible_lb_shape ? [1] : []
+    content {
+      minimum_bandwidth_in_mbps = var.flex_lb_min_shape
+      maximum_bandwidth_in_mbps = var.flex_lb_max_shape
+    }
+  }
   compartment_id = var.compartment_ocid
   display_name   = "${var.instance_name}-lb1"
 

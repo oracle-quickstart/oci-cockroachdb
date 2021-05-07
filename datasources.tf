@@ -1,18 +1,8 @@
-# Get a list of Availability Domains
-#data "oci_identity_availability_domains" "ad" {
-#  compartment_id = var.tenancy_ocid
-#}
-
-#data "template_file" "ad_names" {
-#  count = length(
-#    data.oci_identity_availability_domains.ad.availability_domains,
-#  )
-#  template = data.oci_identity_availability_domains.ad.availability_domains[count.index]["name"]
-#}
+## Copyright © 2020, Oracle and/or its affiliates. 
+## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 data "oci_core_vnic_attachments" "CockroachDBInstance_vnics" {
   compartment_id      = var.compartment_ocid
-#  availability_domain = data.oci_identity_availability_domains.ad.availability_domains[0]["name"]
   availability_domain = var.availablity_domain_name
   instance_id         = oci_core_instance.CockroachDBInstance[0].id
 }
@@ -26,6 +16,7 @@ data "oci_core_images" "InstanceImageOCID" {
   compartment_id           = var.compartment_ocid
   operating_system         = var.instance_os
   operating_system_version = var.linux_os_version
+  shape                    = var.instance_shape
 
   filter {
     name   = "display_name"
@@ -34,5 +25,13 @@ data "oci_core_images" "InstanceImageOCID" {
   }
 }
 
+data "oci_identity_region_subscriptions" "home_region_subscriptions" {
+    tenancy_id = var.tenancy_ocid
+
+    filter {
+      name   = "is_home_region"
+      values = [true]
+    }
+}
 
 
