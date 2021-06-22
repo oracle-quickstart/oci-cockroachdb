@@ -27,15 +27,15 @@ variable "instance_name" {
 }
 
 variable "instance_shape" {
-   default = "VM.Standard.E3.Flex"
+  default = "VM.Standard.E3.Flex"
 }
 
 variable "instance_flex_shape_ocpus" {
-    default = 1
+  default = 1
 }
 
 variable "instance_flex_shape_memory" {
-    default = 10
+  default = 10
 }
 
 variable "ssh_public_key" {
@@ -83,6 +83,6 @@ locals {
 
 # Checks if is using Flexible Compute Shapes
 locals {
-  is_flexible_lb_shape = var.lb_shape == "flexible" ? true : false
+  is_flexible_lb_shape   = var.lb_shape == "flexible" ? true : false
   is_flexible_node_shape = contains(local.compute_flexible_shapes, var.instance_shape)
 }
